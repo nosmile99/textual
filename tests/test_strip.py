@@ -161,6 +161,19 @@ def test_divide():
     ]
 
 
+def test_divide_full_width_no_reference_cycle():
+    """Regression test for https://github.com/Textualize/textual/issues/6738.
+
+    Dividing at exactly the full width returned [self] and cached it in the
+    strip's own _divide_cache, creating a reference cycle (strip ->
+    _divide_cache -> [strip]) that only the cyclic garbage collector could
+    free.
+    """
+    strip = Strip([Segment("foo")])
+    assert strip.divide([strip.cell_length]) == [strip]
+    assert strip._divide_cache.get((strip.cell_length,)) is None
+
+
 @pytest.mark.parametrize(
     "index,cell_position",
     [

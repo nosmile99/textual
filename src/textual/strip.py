@@ -590,15 +590,18 @@ class Strip:
         if (cached := self._divide_cache.get(cache_key)) is not None:
             return cached
 
-        strips: list[Strip]
         if cuts == [cell_length]:
-            strips = [self]
-        else:
-            strips = []
-            add_strip = strips.append
-            for segments, cut in zip(Segment.divide(self._segments, cuts), cuts):
-                add_strip(Strip(segments, cut - pos))
-                pos = cut
+            # Don't cache this case: storing [self] in the strip's own
+            # _divide_cache would create a reference cycle (strip ->
+            # _divide_cache -> [strip]), leaving the strip collectable only
+            # by the cyclic garbage collector.
+            # https://github.com/Textualize/textual/issues/6738
+            return [self]
+        strips: list[Strip] = []
+        add_strip = strips.append
+        for segments, cut in zip(Segment.divide(self._segments, cuts), cuts):
+            add_strip(Strip(segments, cut - pos))
+            pos = cut
 
         self._divide_cache[cache_key] = strips
         return strips

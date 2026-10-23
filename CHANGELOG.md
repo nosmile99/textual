@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Fixed
+
+- Fixed `Strip.divide` creating a reference cycle when dividing at the full width, which left strips collectable only by the cyclic garbage collector https://github.com/Textualize/textual/issues/6738
+
 ## [8.2.8] - 2026-06-30
 
 ### Fixed
